@@ -1,0 +1,154 @@
+---
+import { getTranslations } from '../i18n/ui';
+import BtnPrimary from './ui/BtnPrimary.astro';
+import { getCollection } from "astro:content";
+
+const lang = Astro.currentLocale as 'en' | 'ar';
+
+let t = await getTranslations(lang as 'ar' | 'en');
+
+const projects = await getCollection('projects', ({ id }) => {
+  return id.endsWith(`.${lang}`);
+});
+---
+
+<section id="projects" class="relative bg-white py-24 px-6 overflow-hidden">
+
+  <!-- Subtle Engineering Grid -->
+  <div class="absolute inset-0 -z-10 
+              bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),
+                  linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)]
+              bg-size-[60px_60px] opacity-20">
+  </div>
+
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Header -->
+    <div class="mb-16 max-w-3xl">
+      <p class="text-sm uppercase tracking-widest text-gray-500">
+        {t.projectsSection.subheading}
+      </p>
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mt-4 leading-tight">
+          {t.projectsSection.heading}
+      </h2>
+    </div>
+
+    <!-- Featured Project -->
+    {projects
+      .filter((p) => p.data.featured)
+      .map((project) => (
+        <article class="mb-20 grid md:grid-cols-2 gap-10 items-center">
+
+          <img
+            src={project.data.image}
+            alt={project.data.title}
+            class="rounded-3xl object-cover w-full h-100"
+          />
+
+          <div class="space-y-6">
+
+            <span class="text-xs uppercase tracking-widest text-gray-500">
+              {project.data.category}
+            </span>
+
+            <h3 class="text-3xl md:text-4xl font-bold text-gray-900">
+              {project.data.title}
+            </h3>
+
+            <p class="text-gray-600 leading-relaxed">
+              {project.data.description}
+            </p>
+
+            <!-- Meta Grid -->
+            <div class="grid grid-cols-2 gap-6 text-sm pt-4">
+              <div>
+                <p class="text-gray-400">Location</p>
+                <p class="font-medium">{project.data.location}</p>
+              </div>
+              <div>
+                <p class="text-gray-400">Year</p>
+                <p class="font-medium">{project.data.year}</p>
+              </div>
+              <div>
+                <p class="text-gray-400">Size</p>
+                <p class="font-medium">{project.data.size}</p>
+              </div>
+              <div>
+                <p class="text-gray-400">Status</p>
+                <p class="font-medium">{project.data.status}</p>
+              </div>
+            </div>
+
+            <a
+              href={`/blog/${project.data.articleSlug}`}
+              class="inline-block mt-6 bg-gray-900 text-white px-8 py-3 rounded-full
+                     transition hover:bg-gray-700"
+            >
+              View Case Study
+            </a>
+
+          </div>
+
+        </article>
+      ))}
+
+    <!-- Other Projects Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+      {projects
+        .filter((p) => !p.data.featured)
+        .map((project) => (
+          <article class="bg-gray-50 border border-gray-200 rounded-3xl overflow-hidden
+                          transition md:hover:shadow-xl md:hover:-translate-y-2">
+
+            <img
+              src={project.data.image}
+              alt={project.data.title}
+              class="w-full h-56 object-cover"
+            />
+
+            <div class="p-6 space-y-4">
+
+              <span class="text-xs uppercase tracking-wide text-gray-500">
+                {project.data.category}
+              </span>
+
+              <h3 class="text-xl font-bold text-gray-900">
+                {project.data.title}
+              </h3>
+
+              <p class="text-sm text-gray-600">
+                {project.data.location} • {project.data.year}
+              </p>
+
+              <a
+                href={`/blog/${project.data.articleSlug}`}
+                class="text-sm font-semibold text-gray-900
+                       border-b border-transparent
+                       md:hover:border-gray-900 transition"
+              >
+                Explore →
+              </a>
+
+            </div>
+
+          </article>
+        ))}
+
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-8 text-center">
+      <h3 class="text-2xl font-bold text-gray-900">
+        {t.projectsSection.ctaHeading}
+      </h3>
+      <p class="text-gray-600 mt-4">
+          {t.projectsSection.ctaSupportText}
+      </p>
+      <div class="py-5 cursor-pointer">
+        <BtnPrimary text={t.nav.quote} link='#contact' />
+      </div>
+    </div>
+
+  </div>
+</section>

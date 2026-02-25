@@ -1,0 +1,103 @@
+---
+interface TimelineItem {
+  month: string;
+  milestone: string;
+  status?: "complete" | "active" | "upcoming";
+}
+interface Props {
+  items: TimelineItem[];
+}
+const { items } = Astro.props;
+---
+
+<div class="timeline">
+  {items.map((item, i) => (
+    <div class={`timeline-item timeline-item--${item.status ?? 'upcoming'}`}>
+      <div class="timeline-left">
+        <span class="timeline-month">{item.month}</span>
+      </div>
+      <div class="timeline-connector">
+        <div class="timeline-dot" />
+        {i < items.length - 1 && <div class="timeline-line" />}
+      </div>
+      <div class="timeline-right">
+        <span class="timeline-milestone">{item.milestone}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .timeline {
+    margin: 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 100px 24px 1fr;
+    gap: 0 1rem;
+    align-items: start;
+  }
+  .timeline-left {
+    padding-top: 2px;
+    text-align: right;
+  }
+  .timeline-month {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted, #8a7a6a);
+  }
+  .timeline-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .timeline-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--color-border, #d4c8b8);
+    background: white;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .timeline-item--complete .timeline-dot {
+    background: var(--color-accent, #c8791a);
+    border-color: var(--color-accent, #c8791a);
+  }
+  .timeline-item--active .timeline-dot {
+    background: white;
+    border-color: var(--color-accent, #c8791a);
+    box-shadow: 0 0 0 3px oklch(from var(--color-accent, #c8791a) l c h / 0.2);
+  }
+  .timeline-line {
+    width: 2px;
+    flex: 1;
+    min-height: 2rem;
+    background: var(--color-border, #d4c8b8);
+    margin: 4px 0;
+  }
+  .timeline-item--complete .timeline-line {
+    background: var(--color-accent, #c8791a);
+    opacity: 0.4;
+  }
+  .timeline-right {
+    padding: 0 0 2rem 0;
+  }
+  .timeline-milestone {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--color-text, #2a2015);
+  }
+  .timeline-item--complete .timeline-milestone {
+    color: var(--color-muted, #8a7a6a);
+  }
+  .timeline-item--active .timeline-milestone {
+    font-weight: 600;
+    color: var(--color-text, #2a2015);
+  }
+</style>

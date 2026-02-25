@@ -1,0 +1,48 @@
+---
+import ServiceCard from "./ui/ServiceCard.astro";
+import { getTranslations } from '../i18n/ui';
+import { getCollection } from "astro:content";
+
+const lang = Astro.currentLocale as 'en' | 'ar';
+
+let t = await getTranslations(lang as 'ar' | 'en');
+
+
+// سحب الخدمات اللي بتبدأ بكود اللغة (ar/ أو en/)
+const services = await getCollection('services', ({ id }) => {
+  return id.endsWith(`.${lang}`);
+});
+//console.log(services);
+
+---
+
+<section id='services' class="relative overflow-hidden py-20 bg-white bg-no-repeat">
+
+  <!-- subtle grid -->
+  <div class="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-size-[40px_40px] opacity-40"></div>
+
+  
+</div>
+  <div class="text-center mb-16 ">
+    <p class="text-xs tracking-[0.3em] text-amber-600 font-bold uppercase mb-2">{t.services.supportText}</p>
+    <h2 class="text-5xl md:text-7xl font-black text-primary uppercase relative inline-block after:content-[''] after:block after:w-16 after:h-1 after:bg-primary after:mx-auto after:mt-4">
+      {t.services.heading}
+    </h2>
+    <p class="mt-8 text-slate-500 max-w-xl mx-auto text-base leading-relaxed font-medium">
+      {t.services.subheading}
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 justify-center gap-8 max-w-7xl mx-auto items-stretch">
+    {services.map((s)=>{
+      return(
+            <ServiceCard title={s.data.title} description={s.data.description} icon="hero" img={s.data.image}/>
+      )
+    })
+
+    }
+
+
+
+    </div>
+</section>

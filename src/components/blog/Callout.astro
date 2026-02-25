@@ -1,0 +1,78 @@
+---
+interface Props {
+  type?: "insight" | "warning" | "tip" | "important";
+}
+const { type = "insight" } = Astro.props;
+
+const config = {
+  insight: { icon: "◆", label: "Insight" },
+  warning: { icon: "▲", label: "Warning" },
+  tip: { icon: "●", label: "Pro Tip" },
+  important: { icon: "■", label: "Important" },
+};
+const { icon, label } = config[type];
+---
+
+<aside class={`callout callout--${type}`}>
+  <div class="callout-header">
+    <span class="callout-icon">{icon}</span>
+    <span class="callout-label">{label}</span>
+  </div>
+  <div class="callout-body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .callout {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border-left: 3px solid;
+    position: relative;
+  }
+  .callout--insight {
+    border-color: var(--color-accent, #c8791a);
+    background: oklch(from var(--color-accent, #c8791a) l c h / 0.06);
+  }
+  .callout--warning {
+    border-color: #d4832a;
+    background: #fff8f0;
+  }
+  .callout--tip {
+    border-color: #4a8c5c;
+    background: #f0f7f3;
+  }
+  .callout--important {
+    border-color: #2a4a8c;
+    background: #f0f3f7;
+  }
+  .callout-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .callout-icon {
+    font-size: 0.6rem;
+    color: inherit;
+    opacity: 0.7;
+  }
+  .callout-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-muted, #8a7a6a);
+  }
+  .callout-body {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--color-text, #2a2015);
+  }
+  .callout-body :global(p) {
+    margin: 0;
+  }
+  .callout-body :global(strong) {
+    color: var(--color-accent, #c8791a);
+  }
+</style>

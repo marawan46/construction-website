@@ -1,0 +1,404 @@
+---
+import { getCollection } from "astro:content";
+
+const allPosts = await getCollection("blog", ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Get unique categories
+const categories = ["All", ...new Set(posts.map((p) => p.data.category))];
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog — Construction Co.</title>
+    <meta name="description" content="Insights, case studies, and guides from our construction team." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+
+    <main class="blog-index">
+      <!-- Page Header -->
+      <header class="blog-header">
+        <div class="blog-header__inner">
+          <div class="breadcrumb">
+            <a href="/">Home</a>
+            <span>·</span>
+            <span>Blog</span>
+          </div>
+          <h1 class="blog-header__title">From the Field</h1>
+          <p class="blog-header__subtitle">
+            Project case studies, construction guides, and industry perspectives<br />from our team of builders.
+          </p>
+          <div class="blog-header__count">{posts.length} articles</div>
+        </div>
+      </header>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-bar__inner">
+          <div class="filter-tabs" role="tablist" aria-label="Filter by category">
+            {categories.map((cat) => (
+              <button
+                class="filter-tab"
+                role="tab"
+                data-category={cat}
+                aria-selected={cat === "All" ? "true" : "false"}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Articles Grid -->
+      <div class="articles-section">
+        <div class="articles-inner">
+          <div class="articles-grid" id="articles-grid">
+            {posts.map((post) => (
+              <article class="article-card" data-category={post.data.category}>
+                <a href={`/blog/${post.slug}`} class="article-card__link">
+                  {post.data.heroImage && (
+                    <div class="article-card__image-wrap">
+                      <img
+                        src={post.data.heroImage}
+                        alt={post.data.title}
+                        class="article-card__image"
+                        loading="lazy"
+                      />
+                      {post.data.featured && (
+                        <span class="article-card__badge">Featured</span>
+                      )}
+                    </div>
+                  )}
+                  <div class="article-card__body">
+                    <div class="article-card__meta">
+                      <span class="article-card__category">{post.data.category}</span>
+                      <time class="article-card__date">{formatDate(post.data.pubDate)}</time>
+                    </div>
+                    <h2 class="article-card__title">{post.data.title}</h2>
+                    <p class="article-card__desc">{post.data.description}</p>
+                    <div class="article-card__footer">
+                      <span class="article-card__author">By {post.data.author}</span>
+                      {post.data.tags.slice(0, 2).map((tag) => (
+                        <span class="article-card__tag">{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+
+          <!-- Empty state -->
+          <div class="empty-state" id="empty-state" aria-live="polite">
+            <span>No articles in this category yet.</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const tabs = document.querySelectorAll<HTMLButtonElement>('.filter-tab');
+      const cards = document.querySelectorAll<HTMLElement>('.article-card');
+      const emptyState = document.getElementById('empty-state')!;
+
+      function filterPosts(category: string) {
+        let visible = 0;
+        cards.forEach((card) => {
+          const match = category === 'All' || card.dataset.category === category;
+          card.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+        emptyState.style.display = visible === 0 ? 'block' : 'none';
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach((t) => t.setAttribute('aria-selected', 'false'));
+          tab.setAttribute('aria-selected', 'true');
+          filterPosts(tab.dataset.category ?? 'All');
+        });
+      });
+
+      // Initial state
+      emptyState.style.display = 'none';
+    </script>
+
+  </body>
+</html>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --color-bg: #faf8f5;
+    --color-surface: #f2ede6;
+    --color-border: #ffaf46;
+    --color-text: #2a2015;
+    --color-heading: #1a1208;
+    --color-muted: #6B7280;
+    --color-accent:  #fbbc04;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Lora', Georgia, serif;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Header */
+  .blog-header {
+    background: var(--color-heading);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .blog-header::before {
+    content: 'BLOG';
+    position: absolute;
+    right: -0.05em;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-display);
+    font-size: clamp(8rem, 20vw, 16rem);
+    font-weight: 800;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -0.05em;
+  }
+  .blog-header__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .breadcrumb {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 1.5rem;
+  }
+  .breadcrumb a { color: var(--color-accent); text-decoration: none; }
+  .blog-header__title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 800;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+  .blog-header__subtitle {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.55);
+    max-width: 480px;
+    margin-bottom: 2rem;
+  }
+  .blog-header__count {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-accent);
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--color-heading);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .filter-bar__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-bar__inner::-webkit-scrollbar { display: none; }
+  .filter-tabs {
+    display: flex;
+    gap: 0;
+    width: max-content;
+  }
+  .filter-tab {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .filter-tab:hover { color: rgba(255,255,255,0.7); }
+  .filter-tab[aria-selected="true"] {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+  }
+
+  /* Articles section */
+  .articles-section { padding: 4rem 0 6rem; }
+  .articles-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    background: var(--color-border);
+  }
+  @media (max-width: 900px) {
+    .articles-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .articles-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Article card */
+  .article-card { background: var(--color-bg); }
+  .article-card__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+  .article-card__image-wrap {
+    aspect-ratio: 16/10;
+    overflow: hidden;
+    position: relative;
+  }
+  .article-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .article-card__link:hover .article-card__image { transform: scale(1.04); }
+  .article-card__badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: var(--color-accent);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.6rem;
+  }
+  .article-card__body {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .article-card__meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .article-card__category {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+  }
+  .article-card__date {
+    font-size: 0.65rem;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .article-card__title {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--color-heading);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .article-card__desc {
+    font-size: 0.875rem;
+    line-height: 1.65;
+    color: var(--color-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+  .article-card__footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .article-card__author {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    flex: 1;
+  }
+  .article-card__tag {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: var(--color-surface);
+    color: var(--color-muted);
+    padding: 0.2rem 0.5rem;
+  }
+
+  /* Empty state */
+  .empty-state {
+    display: none;
+    text-align: center;
+    padding: 4rem 2rem;
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+</style>

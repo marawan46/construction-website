@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Content Manager</title>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  </head>
+  <body>
+    <!-- Include the script that builds the page and powers Decap CMS -->
+    <script src="https://unpkg.com/decap-cms@latest/dist/decap-cms.js"></script>
+    
+  </body>
+</html>
+<script>
+  // BEFORE & AFTER
+  CMS.registerEditorComponent({
+  id: "BeforeAfter",
+  label: "Before & After Slider",
+  // الحقول اللي العميل هيملأها في الـ Sidebar
+  fields: [
+    { name: "before", label: "Before Image", widget: "image" },
+    { name: "after", label: "After Image", widget: "image" },
+    { name: "beforeLabel", label: "Before Label", widget: "string", default: "Before" },
+    { name: "afterLabel", label: "After Label", widget: "string", default: "After" }
+  ],
+  // كيف سيتم استخراج البيانات من الـ MDX لو العميل حب يعدل المقال
+  pattern: /<BeforeAfter\s+before="([^"]+)"\s+after="([^"]+)"\s+beforeLabel="([^"]+)"\s+afterLabel="([^"]+)"\s*\/>/,
+  
+  // دالة تحويل الـ Match لبيانات تدخل الـ Fields
+  fromBlock: function(match) {
+    return {
+      before: match[1],
+      after: match[2],
+      beforeLabel: match[3],
+      afterLabel: match[4]
+    };
+  },
+  
+  // دالة تحويل البيانات لـ كود MDX (دي أهم حتة)
+  toBlock: function(data) {
+    return `<BeforeAfter
+  before="${data.before}"
+  after="${data.after}"
+  beforeLabel="${data.beforeLabel}"
+  afterLabel="${data.afterLabel}"
+/>`;
+  },
+  
+  // شكل المكون في شاشة المعاينة (Preview) جوه الـ CMS
+  toPreview: function(data) {
+    return `
+      <div style="background: #f4f4f4; border: 2px dashed #ffb400; padding: 20px; text-align: center;">
+        <p><strong>Before/After Component</strong></p>
+        <p>Before: ${data.beforeLabel} | After: ${data.afterLabel}</p>
+        <img src="${data.before}" style="width: 50px; height: 50px; object-fit: cover;" />
+        <img src="${data.after}" style="width: 50px; height: 50px; object-fit: cover;" />
+      </div>
+    `;
+  }
+});
+  //---------------END------------------------
+  //Project Timeline
+  CMS.registerEditorComponent({
+  id: "ProjectTimeline",
+  label: "Timeline - جدول زمني",
+  fields: [
+    {
+      label: "Timeline Items",
+      name: "items",
+      widget: "list", // ده بيخلي العميل يقدر يزود مراحل براحته
+      fields: [
+        { label: "Month", name: "month", widget: "string" },
+        { label: "Milestone", name: "milestone", widget: "string" },
+        { 
+          label: "Status", 
+          name: "status", 
+          widget: "select", 
+          options: ["complete", "active", "upcoming"],
+          default: "complete"
+        },
+      ],
+    },
+  ],
+  // البحث عن الـ Component في الـ MDX
+  pattern: /<ProjectTimeline\s+items={(\[[\s\S]*?\])}\s*\/>/,
+  fromBlock: (match) => {
+    // تنظيف الـ String وتحويله لـ JSON عشان الـ CMS يفهمه
+    const jsonStr = match[1].replace(/(['"])?([a-z0-9A-Z_]+)(['"])?:/g, '"$2":').replace(/'/g, '"');
+    return { items: JSON.parse(jsonStr) };
+  },
+  toBlock: (data) => {
+    // تحويل الداتا لـ String بتنسيق الـ MDX اللي Astro مستنيه
+    const itemsString = JSON.stringify(data.items, null, 2);
+    return `<ProjectTimeline items={${itemsString}} />`;
+  },
+  toPreview: (data) => `📅 Project Timeline (${data.items?.length || 0} items)`
+});
+  //---------------END-------------------------
+  //Callout
+  CMS.registerEditorComponent({
+  id: "Callout",
+  label: "Callout - تنبيه/ملاحظة",
+  fields: [
+    {
+      label: "Type",
+      name: "type",
+      widget: "select",
+      options: ["insight", "warning", "tip", "important"],
+      default: "insight"
+    },
+    {
+      label: "Content",
+      name: "content",
+      widget: "markdown", // عشان يقدر يكتب Bold أو Links جواها
+      minimal: true
+    }
+  ],
+  // Regex للبحث عن الـ Component
+  pattern: /<Callout type="(\w+)">([\s\S]*?)<\/Callout>/,
+  fromBlock: (match) => ({
+    type: match[1],
+    content: match[2].trim()
+  }),
+  toBlock: (data) => {
+    return `<Callout type="${data.type}">
+  ${data.content}
+</Callout>`;
+  },
+  toPreview: (data) => `💡 [${data.type.toUpperCase()}] ${data.content}`
+});
+//-----------------END--------------------------
+//Stats Block
+CMS.registerEditorComponent({
+  id: "StatBlock",
+  label: "Stats Grid - إحصائيات المشروع",
+  fields: [
+    {
+      label: "Statistics",
+      name: "stats",
+      widget: "list",
+      summary: "{{label}}: {{value}}{{unit}}", // بيخلي العميل يشوف ملخص لكل إحصائية في القائمة
+      fields: [
+        { label: "Value (الرقم)", name: "value", widget: "string", hint: "مثلاً: 150" },
+        { label: "Unit (الوحدة)", name: "unit", widget: "string", hint: "مثلاً: m² أو %" },
+        { label: "Label (الوصف)", name: "label", widget: "string", hint: "مثلاً: Concrete poured" }
+      ],
+    },
+  ],
+  // Regex للبحث عن الـ Component في الـ MDX
+  pattern: /<StatBlock\s+stats={(\[[\s\S]*?\])}\s*\/>/,
+  
+  fromBlock: (match) => {
+    // تنظيف وتحويل الـ String لمصفوفة JSON
+    const jsonStr = match[1]
+      .replace(/(['"])?([a-z0-9A-Z_]+)(['"])?:/g, '"$2":')
+      .replace(/'/g, '"');
+    return { stats: JSON.parse(jsonStr) };
+  },
+  
+  toBlock: (data) => {
+    // تحويل البيانات لـ MDX Syntax
+    const statsString = JSON.stringify(data.stats, null, 2);
+    return `<StatBlock stats={${statsString}} />`;
+  },
+  
+  toPreview: (data) => {
+    return `
+      <div style="background: #1a1a1a; color: #ffb400; padding: 15px; border-radius: 4px; display: flex; gap: 20px; font-family: sans-serif;">
+        ${data.stats?.map(s => `
+          <div>
+            <div style="font-size: 1.2rem; font-weight: bold;">${s.value}${s.unit}</div>
+            <div style="font-size: 0.7rem; color: #ccc;">${s.label}</div>
+          </div>
+        `).join('') || 'Empty Stats'}
+      </div>
+    `;
+  }
+});
+//-------------------END------------------------
+</script>

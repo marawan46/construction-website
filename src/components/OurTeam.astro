@@ -1,0 +1,106 @@
+---
+const team = [
+  {
+    name: "David Reynolds",
+    role: "Chief Structural Engineer",
+    bio: "20+ years delivering large-scale infrastructure and complex steel systems.",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
+    linkedin: "#",
+    x: "#",
+  },
+  {
+    name: "Sophia Martinez",
+    role: "Project Director",
+    bio: "Leads multi-million dollar commercial and industrial developments.",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
+    linkedin: "#",
+    x: "#",
+  },
+  {
+    name: "Michael Chen",
+    role: "Site Operations Manager",
+    bio: "Specialized in operational excellence and on-site coordination.",
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80",
+    linkedin: "#",
+    x: "#",
+  },
+];
+import { getTranslations } from '../i18n/ui';
+
+const lang = Astro.currentLocale as 'en' | 'ar';
+
+let t = await getTranslations(lang as 'ar' | 'en');
+---
+
+<section id="team" class="relative bg-white py-20">
+  <!-- subtle engineering grid -->
+  <div class="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-size-[40px_40px] opacity-40"></div>
+
+  <div class="relative max-w-7xl mx-auto px-6">
+    
+    <!-- Heading -->
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-bold text-gray-900">{t.teamSection.heading}</h2>
+      <p class="mt-4 text-gray-600 max-w-2xl mx-auto">
+        {t.teamSection.subheading}
+      </p>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+      {team.map((member) => (
+        <div class="group text-center transition-all duration-300">
+          
+          <!-- Profile Circle -->
+          <div class="relative mx-auto w-40 h-40">
+            <div class="absolute inset-0 rounded-full bg-amber-400 scale-0 group-hover:scale-110 transition-transform duration-300"></div>
+            <img
+              src={member.image}
+              alt={member.name}
+              class="relative w-40 h-40 rounded-full object-cover border-4 border-white shadow-xl transition-transform duration-300 group-hover:scale-105"
+            />
+          </div>
+
+          <!-- Info -->
+          <div class="mt-6">
+            <h3 class="text-xl font-semibold text-gray-900">
+              {member.name}
+            </h3>
+            <p class="text-amber-500 font-medium mt-1">
+              {member.role}
+            </p>
+            <p class="text-gray-600 text-sm mt-3 px-6">
+              {member.bio}
+            </p>
+          </div>
+
+          <!-- Social Icons -->
+          <div class="flex justify-center gap-4 mt-5">
+            <a
+              href={member.linkedin}
+              class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-amber-400 hover:text-white hover:border-amber-400 transition"
+              target="_blank"
+            >
+              <!-- LinkedIn SVG -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4.98 3.5C4.98 4.88 3.86 6 2.49 6S0 4.88 0 3.5 1.12 1 2.49 1 4.98 2.12 4.98 3.5zM.5 8h4V24h-4zM8 8h3.8v2.2h.05c.53-1 1.85-2.2 3.8-2.2 4.06 0 4.8 2.67 4.8 6.14V24h-4v-7.4c0-1.77-.03-4.05-2.47-4.05-2.47 0-2.85 1.93-2.85 3.92V24H8z"/>
+              </svg>
+            </a>
+
+            <a
+              href={member.x}
+              class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-black hover:text-white hover:border-black transition"
+              target="_blank"
+            >
+              <!-- X SVG -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.244 2H21l-6.52 7.45L22.5 22h-6.828l-5.34-6.97L4.2 22H1.44l6.97-7.97L1.5 2h6.92l4.83 6.33L18.244 2z"/>
+              </svg>
+            </a>
+          </div>
+
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

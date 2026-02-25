@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "projects": "Projects",
+    "services": "Services",
+    "team": "Our Team",
+    "quote": "Get Free Quote"
+  },
+  "hero": {
+    "heading": "High-Converting Landing Page Lorem Ipsum",
+    "subheading": "Leading the industry in sustainable infrastructure and urban development."
+  },
+  "services": {
+    "heading": "Our Services",
+    "subheading": "From ground-breaking to final handover, we deliver precision-engineered solutions that stand the test of time.",
+    "supportText": "What We Build"
+  },
+  "projectsSection": {
+    "heading": "Delivering Structural Excellence Across Commercial & Infrastructure Sectors",
+    "subheading": "Our Projects",
+    "ctaHeading": "Planning a New Project?",
+    "ctaSupportText": "Our engineering team is ready to transform your vision into reality."
+  },
+  "blog": {
+    "heading": "Engineering Knowledge. Field Experience.",
+    "subheading": "Insights & Research",
+    "viewAllBtn": "View All Articles"
+  },
+  "teamSection": {
+    "heading": "Our Engineering Team",
+    "subheading": "Experienced professionals delivering structural excellence, operational precision, and innovative construction solutions."
+  },
+  "contactSection": {
+    "heading": "Let’s Build Something Exceptional Together",
+    "ctaSupportText": "Request a Free Quote",
+    "subheading": "Tell us about your project requirements, and our engineering team will provide a detailed consultation and cost estimation within 24 hours.\n\n✔️ 20+ Years Industry Experience\n\n✔️ Licensed & Certified Engineers\n\n✔️ Transparent Pricing Structure"
+  }
+}

@@ -1,0 +1,124 @@
+---
+interface Props {
+  before: string;
+  after: string;
+  beforeLabel?: string;
+  afterLabel?: string;
+}
+const { before, after, beforeLabel = "Before", afterLabel = "After" } = Astro.props;
+const id = `ba-${Math.random().toString(36).slice(2, 7)}`;
+---
+
+<div class="before-after" id={id}>
+  <div class="ba-track">
+    <div class="ba-before">
+      <img src={before} alt={beforeLabel} />
+      <span class="ba-label ba-label--before">{beforeLabel}</span>
+    </div>
+    <div class="ba-after">
+      <img src={after} alt={afterLabel} />
+      <span class="ba-label ba-label--after">{afterLabel}</span>
+    </div>
+    <div class="ba-divider">
+      <div class="ba-handle">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M7 4L1 10L7 16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <path d="M13 4L19 10L13 16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <input type="range" class="ba-slider" min="0" max="100" value="50" aria-label="Before/after slider" />
+  </div>
+</div>
+
+<style>
+  .before-after {
+    margin: 2.5rem 0;
+    user-select: none;
+  }
+  .ba-track {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+    cursor: ew-resize;
+  }
+  .ba-before,
+  .ba-after {
+    position: absolute;
+    inset: 0;
+  }
+  .ba-before img,
+  .ba-after img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .ba-after {
+    clip-path: inset(0 50% 0 0);
+  }
+  .ba-label {
+    position: absolute;
+    bottom: 1rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    padding: 0.3rem 0.6rem;
+  }
+  .ba-label--before { left: 1rem; }
+  .ba-label--after { right: 1rem; }
+  .ba-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: white;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .ba-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    background: var(--color-accent, #c8791a);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .ba-slider {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: ew-resize;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+</style>
+
+<script define:vars={{ id }}>
+  const container = document.getElementById(id);
+  if (container) {
+    const after = container.querySelector('.ba-after');
+    const divider = container.querySelector('.ba-divider');
+    const slider = container.querySelector('.ba-slider');
+
+    function update(val) {
+      const pct = 100 - val;
+      after.style.clipPath = `inset(0 ${pct}% 0 0)`;
+      divider.style.left = `${val}%`;
+    }
+
+    slider.addEventListener('input', (e) => update(e.target.value));
+    update(50);
+  }
+</script>

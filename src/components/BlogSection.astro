@@ -1,0 +1,115 @@
+---
+import { getCollection } from "astro:content";
+// Only get featured, non-draft articles, sorted newest first
+const allPosts = await getCollection("blog", ({ data }) => {
+  return !data.draft && data.featured === true;
+});
+const featured = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+
+import { getTranslations } from '../i18n/ui';
+
+const lang = Astro.currentLocale as 'en' | 'ar';
+
+let t = await getTranslations(lang as 'ar' | 'en');
+---
+
+<section id="blog" class="relative bg-[#F2F2F2] py-24 overflow-hidden">
+  <!-- Engineering Background Grid -->
+  <div class="absolute inset-0 -z-10 
+              bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),
+                  linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)]
+              bg-size-[48px_48px] opacity-30">
+  </div>
+
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Header -->
+    <div class="mb-16">
+      <p class="text-sm uppercase tracking-widest text-gray-500">
+        {t.blog.subheading}
+      </p>
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mt-4">
+          {t.blog.heading}
+      </h2>
+    </div>
+
+    <!-- Blog Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+      {featured.map((post) => (
+        <article
+          class="group bg-gray-50 rounded-3xl overflow-hidden 
+                 border border-gray-200
+                 transition duration-300
+                 md:hover:-translate-y-2 md:hover:shadow-xl"
+        >
+
+          <!-- Image -->
+          <div class="overflow-hidden">
+            <img
+              src={post.data.heroImage}
+              alt={post.data.title}
+              class="w-full h-56 object-cover
+                     transition duration-700
+                     md:group-hover:scale-105"
+            />
+          </div>
+
+          <!-- Content -->
+          <div class="p-6 space-y-4">
+
+            <!-- Meta -->
+            <div class="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wide">
+              <span class="bg-gray-200 px-3 py-1 rounded-full text-gray-700">
+                {post.data.category}
+              </span>
+              <span>{post.readTime}</span>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-900 leading-snug">
+              {post.data.title}
+            </h3>
+
+            <p class="text-gray-600 text-sm leading-relaxed">
+              {post.data.description}
+            </p>
+
+            <div class="flex items-center justify-between pt-4 text-sm">
+              <span class="text-gray-400">{formatDate(post.data.pubDate)}</span>
+              <a
+                href={`/blog/${post.slug}`}
+                class="font-semibold text-gray-900
+                       relative after:absolute after:left-0 after:-bottom-1 
+                       after:h-0.5 after:w-0 after:bg-gray-900
+                       md:hover:after:w-full after:transition-all"
+              >
+                Read Article →
+              </a>
+            </div>
+
+          </div>
+
+        </article>
+      ))}
+
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-10 text-center">
+      <a
+        href="/blog"
+        class="inline-block border border-gray-900 
+               px-8 py-3 rounded-full font-semibold
+               transition duration-300
+               md:hover:bg-gray-900 md:hover:text-white"
+      >
+        {t.blog.viewAllBtn}
+      </a>
+    </div>
+
+  </div>
+</section>

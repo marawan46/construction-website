@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@plugin "daisyui"{
+  themes: light --default;
+}
+:root{
+    --color-primary:#fbbc04;
+}
+@theme {
+  /* تعريف الألوان الأساسية والثانوية */
+  --color-Primary:        #1E293B;
+  --color-Primary-dark:   #0F172A;
+  --color-Accent:         #F59E0B;
+  --color-Accent-hover:   #D97706;
+  --color-Background:     #F8FAFC;
+  --color-Surface:        #FFFFFF;
+  --color-Border:         #E5E7EB;
+  --color-text-main:      #111827;
+  --color-text-muted:     #6B7280;
+  --color-hero: #0f172a;
+  /* تعريف الخطوط */
+  /* ملاحظة: 'Inter' للإنجليزية و 'Cairo' للعربية */
+  --font-sans: "Inter", "Cairo", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Cairo", "Inter", sans-serif;
+}
+
+/* تحسين إضافي: تحديد الخط الأساسي بناءً على اللغة لضمان أفضل رؤية */
+:lang(ar) {
+  font-family: var(--font-heading);
+}
+
+:lang(en) {
+  font-family: var(--font-sans);
+}
+
+::-webkit-scrollbar {
+  width: 8px; /* خليه صغير وسمبل */
+  height: 8px; /* للـ scroll الأفقي */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ffb400; 
+  border: 2px solid #f1f1f1; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ffb400; 
+}
+
+* {
+  scrollbar-width: thin; 
+  scrollbar-color: #ffb400 #f1f1f1;
+}

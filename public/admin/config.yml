@@ -1,0 +1,213 @@
+local_backend: true
+
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/images"
+public_folder: "/images"
+i18n:
+  structure: multiple_files
+  locales: [ar, en]
+  default_locale: en
+
+collections:
+  - name: "global"
+    label: "Global UI Content"
+    i18n: true
+    format: "json"
+    extension: "json"
+    folder: "content/global"
+    create: false
+    slug: "{{locale}}"
+    identifier_field: "locale"
+    summary: "{{locale}} UI Content"
+    fields:
+      - { label: "Locale", name: "locale", widget: "hidden", i18n: duplicate }
+
+      # ======================
+      # NAVIGATION
+      # ======================
+      - label: "Navigation"
+        name: "nav"
+        widget: "object"
+        i18n: true
+        fields:
+          - { label: "Home", name: "home", widget: "string", i18n: true }
+          - { label: "About Us", name: "about", widget: "string", i18n: true }
+          - { label: "Projects", name: "projects", widget: "string", i18n: true }
+          - { label: "Services", name: "services", widget: "string", i18n: true }
+          - { label: "Our Team", name: "team", widget: "string", i18n: true }
+          - { label: "Get Free Quote", name: "quote", widget: "string", i18n: true }
+
+      # ======================
+      # HERO SECTION
+      # ======================
+      - label: "Hero Section"
+        name: "hero"
+        widget: "object"
+        i18n: true
+        fields:
+          - { label: "Heading", name: "heading", widget: "string", i18n: true }
+          - { label: "Subheading", name: "subheading", widget: "text", i18n: true }
+
+      # ======================
+      # SERVICES SECTION
+      # ======================
+      - label: "Our Services Section"
+        name: "services"
+        widget: "object"
+        i18n: true
+        fields:
+          - { label: "Heading", name: "heading", widget: "string", i18n: true }
+          - { label: "Subheading", name: "subheading", widget: "text", i18n: true }
+          - { label: "Support Text", name: "supportText", widget: "text", i18n: true }
+
+      # ======================
+      # PROJECTS SECTION
+      # ======================
+      - label: "Our Projects Section"
+        name: "projectsSection"
+        widget: "object"
+        i18n: true
+        fields:
+          - { label: "Heading", name: "heading", widget: "string", i18n: true }
+          - { label: "Subheading", name: "subheading", widget: "text", i18n: true }
+          - { label: "CTA Heading", name: "ctaHeading", widget: "string", i18n: true }
+          - { label: "CTA Support Text", name: "ctaSupportText", widget: "text", i18n: true }
+
+      # ======================
+      # BLOG SECTION
+      # ======================
+      - label: "Blog Section"
+        name: "blog"
+        widget: "object"
+        i18n: true
+        fields:
+          - { label: "Heading", name: "heading", widget: "string", i18n: true }
+          - { label: "Subheading", name: "subheading", widget: "text", i18n: true }
+          - { label: "View All Button", name: "viewAllBtn", widget: "string", i18n: true }
+
+      # ======================
+      # TEAM SECTION
+      # ======================
+      - label: "Team Section"
+        name: "teamSection"
+        widget: "object"
+        i18n: true
+        fields:
+          - { label: "Heading", name: "heading", widget: "string", i18n: true }
+          - { label: "Subheading", name: "subheading", widget: "text", i18n: true }
+
+      # ======================
+      # CONTACT US SECTION
+      # ======================
+      - label: "Contact Us Section"
+        name: "contactSection"
+        widget: "object"
+        i18n: true
+        fields:
+          - { label: "Heading", name: "heading", widget: "string", i18n: true }
+          - { label: "Subheading", name: "subheading", widget: "text", i18n: true }
+          - { label: "CTA Support Text", name: "ctaSupportText", widget: "text", i18n: true }
+#-----------Services------------------  
+  - name: "services"
+    label: "Services"
+    folder: "src/content/services" # هيعمل فولدر ar وفولدر en جواه
+    extension: "json"
+    format: "json"
+    create: true
+    i18n: true
+    fields:
+      - { label: "Title", name: "title", widget: "string", i18n: true }
+      - { label: "Description", name: "description", widget: "text", i18n: true }
+      - { label: "Link Slug", name: "slug", widget: "string", i18n: true }
+      - { label: "Image", name: "image", widget: "image", i18n: duplicate }
+      - { label: "Order", name: "order", widget: "number", default: 1, i18n: duplicate }
+
+# ─── PROJECTS ────────────────────────────────────────────────────────────────
+  - name: "projects"
+    label: "Projects"
+    label_singular: "Project"
+    folder: "src/content/projects"
+    create: true
+    slug: "{{id}}-{{slug}}"
+    extension: "json"
+    format: "json"
+    i18n: true                        # inherits top-level i18n config
+    fields:
+      - { label: "ID", name: "id", widget: "string", hint: "Short unique identifier e.g. 03", i18n: duplicate }
+      - { label: "Title", name: "title", widget: "string", i18n: true }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        i18n: duplicate                # same value in both locales
+        options:
+          - { label: "Infrastructure", value: "Infrastructure" }
+          - { label: "Commercial", value: "Commercial" }
+          - { label: "Residential", value: "Residential" }
+          - { label: "Industrial", value: "Industrial" }
+          - { label: "Mixed-Use", value: "Mixed-Use" }
+          - { label: "Renovation", value: "Renovation" }
+      - { label: "Location", name: "location", widget: "string", i18n: true }
+      - { label: "Year", name: "year", widget: "string", i18n: duplicate }
+      - { label: "Size", name: "size", widget: "string", i18n: true }
+      - label: "Status"
+        name: "status"
+        widget: "select"
+        i18n: duplicate
+        options:
+          - { label: "Completed", value: "Completed" }
+          - { label: "In Progress", value: "In Progress" }
+          - { label: "Planning", value: "Planning" }
+      - { label: "Description", name: "description", widget: "text", i18n: true }
+      - { label: "Upload Image", name: "imageUpload", widget: "image", required: false, hint: "Alternative to URL — upload directly", i18n: duplicate }
+      - label: "Featured on Homepage"
+        name: "featured"
+        widget: "boolean"
+        default: false
+        i18n: duplicate
+        hint: "Toggle ON to highlight this project on the landing page"
+      - label: "Linked Article"
+        name: "articleSlug"
+        widget: "string"
+        required: false
+        i18n: duplicate
+        hint: "Slug of a blog article to link to — e.g. riverside-tower-case-study (leave blank if none)"
+
+######################## BLOG ########################################################
+  - name: "blog"
+    label: "Blog Articles"
+    folder: "src/content/blog"
+    create: true
+    slug: "{{slug}}"
+    extension: "mdx"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Publish Date", name: "pubDate", widget: "datetime" }
+      - { label: "Updated Date", name: "updatedDate", widget: "datetime", required: false }
+      - { label: "Hero Image", name: "heroImage", widget: "image", required: false }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options:
+          - "Projects"
+          - "Tips & Guides"
+          - "Industry News"
+          - "Case Studies"
+          - "Company Updates"
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Author", name: "author", widget: "string", default: "Editorial Team" }
+      - label: "Featured on Homepage"
+        name: "featured"
+        widget: "boolean"
+        default: false
+        hint: "Toggle ON to show this article in the Featured section of the landing page"
+      - label: "Draft"
+        name: "draft"
+        widget: "boolean"
+        default: false
+        hint: "Toggle ON to hide this article from the public site"
+      - { label: "Body", name: "body", widget: "markdown" }
