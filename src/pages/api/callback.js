@@ -1,3 +1,5 @@
+export const prerender = false;
+
 export const GET = async ({ request }) => {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
